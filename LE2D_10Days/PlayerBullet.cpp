@@ -21,6 +21,8 @@ PlayerBullet::PlayerBullet() {
 
 }
 
+
+
 void PlayerBullet::Shoot(const Vector2& startPos) {
     if (!isShot) {
         isShot = true;

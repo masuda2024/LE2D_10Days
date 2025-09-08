@@ -4,6 +4,7 @@
 class PlayerBullet {
 public:
     PlayerBullet();
+    void ItemGet();
     void Initialize();
     void Update();
     void Draw() ;

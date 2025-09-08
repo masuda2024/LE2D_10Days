@@ -6,7 +6,9 @@
 #include "Line.h"
 #include "Vector2.h"
 #include <cstring>
-
+#include <ctime> // time()
+#include "time.h"
+#include"Item.h"
 const char kWindowTitle[] = "2061_線押し陣取り";
 
 const int WL = 0;
@@ -24,6 +26,29 @@ enum Scene {
     OVER
 };
 
+
+
+
+
+
+
+
+struct Item
+{
+    Vector2 pos;
+    float radius;
+    bool isAppear;
+    bool isGet;
+    int timeLimit;
+    Vector2 speed;
+};
+
+
+
+
+
+
+
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
     Novice::Initialize(kWindowTitle, WR, WB);
@@ -33,12 +58,73 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
 
+
+    
+
+
+
+    
+
+
+
+
 #pragma region 初期化
     int scene = TITLE;
+
+
+
+
+    //＝＝＝ランダム生成＝＝＝
+
+    unsigned int currentTime = static_cast<int>(time(nullptr));
+    srand(currentTime);
+
+    //ダブルアタック
+    float PosXA = static_cast<float>(rand() % WR);
+    float PosYA = static_cast<float>(rand() % -10);
+
+    //追尾弾
+    float PosXB = static_cast<float>(rand() % WR);
+    float PosYB = static_cast<float>(rand() % -10);
+
+
+    //＝＝＝アイテム＝＝＝
+    //アイテム：【ダブルアタック】
+    Item doubleAttack{};
+    doubleAttack.pos = { PosXA,PosYA };
+    doubleAttack.radius = 20.0f;
+    doubleAttack.isAppear = true;
+    doubleAttack.isGet = false;
+    doubleAttack.timeLimit = 1200;
+    doubleAttack.speed.y = 1;
+
+    //アイテム：【追尾弾】
+    Item follow{};
+    follow.pos = { PosXB,PosYB };
+    follow.radius = 20.0f;
+    follow.isAppear = true;
+    follow.isGet = false;
+    follow.speed.y = 1;
+    follow.timeLimit = 1200;
+
+
+
+
+
+
+
+
+
+
+
 
     Player player;
     Enemy enemy;
     Line line;
+
+    Item item;
+
+
 
     const int kMaxPlayerBullets = 8;
     PlayerBullet playerBullets[kMaxPlayerBullets];
@@ -71,7 +157,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     int Ground= Novice::LoadTexture("Resource/Scene/Ground.png");
     //アイテム
     int _doubleAttack= Novice::LoadTexture("Resource/Items/doubleAttack.png");
-    int follow = Novice::LoadTexture("Resource/Items/follow.png");
+    int _follow = Novice::LoadTexture("Resource/Items/follow.png");
 
 
 
@@ -194,7 +280,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 WHITE
             );
             Novice::DrawSprite(
-                140, 530, follow,
+                140, 530, _follow,
                 1.0f, 1.0f, 0.0f,
                 WHITE
             );
@@ -214,6 +300,17 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 1.0f, 1.0f, 0.0f,
                 WHITE
             );
+
+
+
+
+            follow.pos.y += follow.speed.y;
+
+            doubleAttack.pos.y += doubleAttack.speed.y;
+
+
+            item.Move();
+           
 
 
         // プレイヤー移動
@@ -271,7 +368,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         }
         for (int i = 0; i < kMaxEnemyBullets; i++) {
             if (enemyBullets[i].IsShot()) {
-                // Playe判定
+                // Player判定
                 if (player.CheckHit(enemyBullets[i].GetPos(), enemyBullets[i].GetRadius())) {
                     enemyBullets[i].SetShot(false);
 
@@ -283,6 +380,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         //被弾タイマー更新 ======
         player.Update();
         enemy.Update();
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
 
         if (line.CheckHitPlayer(player)) {
             isGameOver = true;  //負け
@@ -353,8 +470,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             break;
 #pragma endregion
         }
-
-
 
         Novice::EndFrame();
 
