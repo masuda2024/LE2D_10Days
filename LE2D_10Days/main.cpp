@@ -54,22 +54,27 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #pragma endregion
 
 #pragma region テクスチャ
-
+    //タイトル
     int TitleBack = Novice::LoadTexture("Resource/Title/TitleBack.png");
     int Title1 = Novice::LoadTexture("Resource/Title/TitleFont1.png");
     int Title2 = Novice::LoadTexture("Resource/Title/TitleFont2.png");
     int Title3 = Novice::LoadTexture("Resource/Title/WarningColor.png");
     int TitleUI = Novice::LoadTexture("Resource/Title/TitleUI.png");
-
-
-
+    //チュートリアル
     int Tutorial1= Novice::LoadTexture("Resource/Tutorial/Tutorial1.png");
+    int Tutorial2 = Novice::LoadTexture("Resource/Tutorial/Tutorial2.png");
     int PlayerTex = Novice::LoadTexture("Resource/Player/Tank.png");
-
+    //クリア、オーバー画面
     int Clear= Novice::LoadTexture("Resource/Scene/Clear.png");
     int Over = Novice::LoadTexture("Resource/Scene/Over.png");
-
+    //ゲーム画面の地面
     int Ground= Novice::LoadTexture("Resource/Scene/Ground.png");
+    //アイテム
+    int _doubleAttack= Novice::LoadTexture("Resource/Items/doubleAttack.png");
+    int follow = Novice::LoadTexture("Resource/Items/follow.png");
+
+
+
 
 #pragma endregion
 
@@ -81,14 +86,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
         switch (scene) {
         case TITLE:
-           
+#pragma region タイトル
 
 
             isGameClear = false;
             isGameOver = false;
             
             
-            
+            //描画
             Novice::DrawSprite(
                 0, 0, TitleBack,
                 1.0f, 1.0f, 0.0f,
@@ -122,32 +127,35 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
 
-
+            //ゲーム
             if (keys[DIK_SPACE]) {
                 scene = GAME;
                 break;
             }
+            //クレジット
             if (preKeys[DIK_C]) {
                 scene = CREDIT;
                 break;
             }
+            //チュートリアル
             if (preKeys[DIK_T]) {
                 scene = TUTORIAL1;
                 break;
             }
             break;
-
-
+#pragma endregion
         case CREDIT:
-            
+#pragma region クレジット
             if (preKeys[DIK_E]) {
                 scene = TITLE;
                 break;
             }
             break;
 
-
+#pragma endregion
         case TUTORIAL1:
+#pragma region チュートリアル1  
+            //描画
             Novice::DrawSprite(
                 0, 0, Tutorial1,
                 1.0f, 1.0f, 0.0f,
@@ -158,10 +166,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 1.0f, 1.0f, 0.0f,
                 WHITE
             );
-            
-            
-            
-            
+   
             if (preKeys[DIK_E]) {
                 scene = TITLE;
                 break;
@@ -174,37 +179,41 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
             break;
-
+#pragma endregion
         case TUTORIAL2:
-            
+#pragma region チュートリアル2  
+            //描画
+            Novice::DrawSprite(
+                0, 0, Tutorial2,
+                1.0f, 1.0f, 0.0f,
+                WHITE
+            );
+            Novice::DrawSprite(
+                140, 430, _doubleAttack,
+                1.0f, 1.0f, 0.0f,
+                WHITE
+            );
+            Novice::DrawSprite(
+                140, 530, follow,
+                1.0f, 1.0f, 0.0f,
+                WHITE
+            );
+
             if (preKeys[DIK_A]) {
                 scene = TUTORIAL1;
                 break;
             }
             break;
-
+#pragma endregion
         case GAME:
-
+#pragma region ゲーム   
+            //地面
             Novice::DrawSprite(
                 0, 0,
                 Ground,
                 1.0f, 1.0f, 0.0f,
                 WHITE
             );
-
-
-            
-
-
-            if (preKeys[DIK_C]) {
-                scene = CLEAR;
-                break;
-            }
-            if (preKeys[DIK_B]) {
-                scene = OVER;
-                break;
-            }
-
 
 
         // プレイヤー移動
@@ -296,8 +305,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
         break;
 
-
+#pragma endregion 
         case CLEAR:
+#pragma region クリア
            Novice::DrawSprite(
                 0, 0, 
                 Clear,
@@ -319,8 +329,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             }
             break;
 
-
+#pragma endregion
         case OVER:
+#pragma region オーバー
             Novice::DrawSprite(
                 0, 0,
                 Over,
@@ -340,6 +351,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 break;
             }
             break;
+#pragma endregion
         }
 
 
