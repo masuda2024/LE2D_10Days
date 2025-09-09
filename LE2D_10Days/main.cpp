@@ -7,8 +7,7 @@
 #include "Vector2.h"
 #include <cstring>
 #include <ctime> // time()
-#include "time.h"
-#include"Item.h"
+
 const char kWindowTitle[] = "2061_線押し陣取り";
 
 const int WL = 0;
@@ -27,45 +26,12 @@ enum Scene {
 };
 
 
-
-
-
-
-
-
-struct Item
-{
-    Vector2 pos;
-    float radius;
-    bool isAppear;
-    bool isGet;
-    int timeLimit;
-    Vector2 speed;
-};
-
-
-
-
-
-
-
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
     Novice::Initialize(kWindowTitle, WR, WB);
 
     char keys[256] = { 0 };
     char preKeys[256] = { 0 };
-
-
-
-
-    
-
-
-
-    
-
-
 
 
 #pragma region 初期化
@@ -75,7 +41,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
     //＝＝＝ランダム生成＝＝＝
-
+    /*
     unsigned int currentTime = static_cast<int>(time(nullptr));
     srand(currentTime);
 
@@ -86,35 +52,12 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     //追尾弾
     float PosXB = static_cast<float>(rand() % WR);
     float PosYB = static_cast<float>(rand() % -10);
+    */
+
+    
 
 
-    //＝＝＝アイテム＝＝＝
-    //アイテム：【ダブルアタック】
-    Item doubleAttack{};
-    doubleAttack.pos = { PosXA,PosYA };
-    doubleAttack.radius = 20.0f;
-    doubleAttack.isAppear = true;
-    doubleAttack.isGet = false;
-    doubleAttack.timeLimit = 1200;
-    doubleAttack.speed.y = 1;
-
-    //アイテム：【追尾弾】
-    Item follow{};
-    follow.pos = { PosXB,PosYB };
-    follow.radius = 20.0f;
-    follow.isAppear = true;
-    follow.isGet = false;
-    follow.speed.y = 1;
-    follow.timeLimit = 1200;
-
-
-
-
-
-
-
-
-
+    
 
 
 
@@ -122,7 +65,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     Enemy enemy;
     Line line;
 
-    Item item;
+   
 
 
 
@@ -146,6 +89,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     int Title2 = Novice::LoadTexture("Resource/Title/TitleFont2.png");
     int Title3 = Novice::LoadTexture("Resource/Title/WarningColor.png");
     int TitleUI = Novice::LoadTexture("Resource/Title/TitleUI.png");
+    //クレジット
+    int Credit = Novice::LoadTexture("Resource/Credit/Credit.png");
     //チュートリアル
     int Tutorial1= Novice::LoadTexture("Resource/Tutorial/Tutorial1.png");
     int Tutorial2 = Novice::LoadTexture("Resource/Tutorial/Tutorial2.png");
@@ -163,7 +108,51 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
 #pragma endregion
+    // Springin
+    // https://www.springin.org/
 
+#pragma region BGM_SE
+    
+    //=====SE=====//
+     
+     
+    //Springin/戦闘-3/発砲1
+    int firing1 = Novice::LoadAudio("Resource/Source/SE/Firing1.mp3");
+
+    //Springin/ボタン・システム-1/決定2
+    int decision2 = Novice::LoadAudio("Resource/Source/SE/Decision2.mp3");
+    
+    //Springin/ボタン・システム-1/決定5
+    int decision5 = Novice::LoadAudio("Resource/Source/SE/Decision5.mp3");
+
+    //Springin/ボタン・システム-1/決定11
+    int decision11 = Novice::LoadAudio("Resource/Source/SE/Decision11.mp3");
+
+    //Springin/戦闘-3/金属叩き
+    int metalHammer = Novice::LoadAudio("Resource/Source/SE/MetalHammer.mp3");
+
+    //Springin/ボタン・システム-1/出題1
+    int question1 = Novice::LoadAudio("Resource/Source/SE/Question1.mp3");
+    
+    //Springin/ボタン・システム-2/不正解2
+    int incorrectAnswer2 = Novice::LoadAudio("Resource/Source/SE/IncorrectAnswer2.mp3");
+
+    //=====BGM=====//
+
+    //BGM
+    int playHandle = -1;
+    
+    
+    //Springin/BGM-1/ゆったりDIY2
+    int yuttariDIY2 = Novice::LoadAudio("Resource/Source/SE/YuttariDIY2.mp3");
+
+    //Springin/BGM-1/RPGバトル1
+    int RPGbattle= Novice::LoadAudio("Resource/Source/SE/RPG_Battle1.mp3");
+
+    
+
+
+#pragma endregion
     while (Novice::ProcessMessage() == 0)
     {
         Novice::BeginFrame();
@@ -173,8 +162,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         switch (scene) {
         case TITLE:
 #pragma region タイトル
-
-
+            //	音を鳴らす
+            if (Novice::IsPlayingAudio(playHandle) == 0 || playHandle == -1) {
+                playHandle = Novice::PlayAudio(yuttariDIY2, 0, 0.3f);
+                break;
+            }
             isGameClear = false;
             isGameOver = false;
             
@@ -204,7 +196,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 WHITE
             );
 
-
             Novice::DrawSprite(
                 354, 500, TitleUI,
                 2.0f, 2.0f, 0.0f,
@@ -215,16 +206,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
             //ゲーム
             if (keys[DIK_SPACE]) {
+                Novice::StopAudio(playHandle);
+                Novice::PlayAudio(decision11, 0, 0.3f);
                 scene = GAME;
                 break;
             }
             //クレジット
             if (preKeys[DIK_C]) {
+                Novice::StopAudio(playHandle);
+                Novice::PlayAudio(decision2, 0, 0.3f);
                 scene = CREDIT;
                 break;
             }
             //チュートリアル
             if (preKeys[DIK_T]) {
+                Novice::StopAudio(playHandle);
+                Novice::PlayAudio(decision2, 0, 0.3f);
                 scene = TUTORIAL1;
                 break;
             }
@@ -232,7 +229,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #pragma endregion
         case CREDIT:
 #pragma region クレジット
+            //	音を鳴らす
+            if (Novice::IsPlayingAudio(playHandle) == 0 || playHandle == -1) {
+                playHandle = Novice::PlayAudio(yuttariDIY2, 0, 0.3f);
+                break;
+            }
+            //描画
+            Novice::DrawSprite(
+                0, 0, Credit,
+                1.0f, 1.0f, 0.0f,
+                WHITE
+            );
             if (preKeys[DIK_E]) {
+                Novice::StopAudio(playHandle);
+                Novice::PlayAudio(decision5, 0, 0.3f);
                 scene = TITLE;
                 break;
             }
@@ -241,6 +251,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #pragma endregion
         case TUTORIAL1:
 #pragma region チュートリアル1  
+            //	音を鳴らす
+            if (Novice::IsPlayingAudio(playHandle) == 0 || playHandle == -1) {
+                playHandle = Novice::PlayAudio(yuttariDIY2, 0, 0.3f);
+                break;
+            }
             //描画
             Novice::DrawSprite(
                 0, 0, Tutorial1,
@@ -254,11 +269,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             );
    
             if (preKeys[DIK_E]) {
+                Novice::StopAudio(playHandle);
+                Novice::PlayAudio(decision5, 0, 0.3f);
                 scene = TITLE;
                 break;
             }
 
             if (preKeys[DIK_D]) {
+                Novice::PlayAudio(decision2, 0, 0.3f);
                 scene = TUTORIAL2;
                 break;
             }
@@ -284,8 +302,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 1.0f, 1.0f, 0.0f,
                 WHITE
             );
-
+            if (preKeys[DIK_E]) {
+                Novice::StopAudio(playHandle);
+                Novice::PlayAudio(decision5, 0, 0.3f);
+                scene = TITLE;
+                break;
+            }
             if (preKeys[DIK_A]) {
+                Novice::PlayAudio(decision2, 0, 0.3f);
                 scene = TUTORIAL1;
                 break;
             }
@@ -293,6 +317,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #pragma endregion
         case GAME:
 #pragma region ゲーム   
+           
+            //	音を鳴らす
+            if (Novice::IsPlayingAudio(playHandle) == 0 || playHandle == -1) {
+                playHandle = Novice::PlayAudio(RPGbattle, 0, 0.5f);
+                break;
+            }
+            
             //地面
             Novice::DrawSprite(
                 0, 0,
@@ -303,15 +334,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
 
-
-            follow.pos.y += follow.speed.y;
-
-            doubleAttack.pos.y += doubleAttack.speed.y;
-
-
-            item.Move();
-           
-
+       
 
         // プレイヤー移動
         player.Move(WL, WR, WT, WB, keys);
@@ -322,6 +345,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         // プレイヤー弾発射
         if (playerBulletCooldown > 0) playerBulletCooldown--;
         if (keys[DIK_SPACE] && playerBulletCooldown <= 0){
+            Novice::PlayAudio(firing1, 0, 0.3f);
             for (int i = 0; i < kMaxPlayerBullets; i++){
                 if (!playerBullets[i].IsShot()){
                     playerBullets[i].Shoot(player.GetPos());
@@ -339,12 +363,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             enemyBulletCooldown--;
         };
 
-        if (enemyBulletCooldown <= 0)
-        {
-            for (int i = 0; i < kMaxEnemyBullets; i++)
-            {
-                if (!enemyBullets[i].IsShot())
-                {
+        if (enemyBulletCooldown <= 0){
+            for (int i = 0; i < kMaxEnemyBullets; i++){
+                if (!enemyBullets[i].IsShot()){
+                    Novice::PlayAudio(firing1, 0, 0.3f);
                     enemyBullets[i].Shoot(enemy.GetPos());
                     enemyBulletCooldown = 30; // 敵のクールタイム
                     break;
@@ -360,6 +382,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             if (playerBullets[i].IsShot()) {
                 // Enemy判定
                 if (enemy.CheckHit(playerBullets[i].GetPos(), playerBullets[i].GetRadius())) {
+                    Novice::PlayAudio(metalHammer, 0, 0.3f);
                     playerBullets[i].SetShot(false);
 
                     line.LineEnemyHit();
@@ -370,6 +393,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             if (enemyBullets[i].IsShot()) {
                 // Player判定
                 if (player.CheckHit(enemyBullets[i].GetPos(), enemyBullets[i].GetRadius())) {
+                    Novice::PlayAudio(metalHammer, 0, 0.3f);
                     enemyBullets[i].SetShot(false);
 
                     line.LinePlayerHit();
@@ -383,30 +407,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
 
-
-
-
-
-
-
-        
-
-
-
-
-
-
-
-
-
-
-
         if (line.CheckHitPlayer(player)) {
+            Novice::StopAudio(playHandle);
             isGameOver = true;  //負け
+            Novice::PlayAudio(incorrectAnswer2, 0, 0.3f);
             scene = OVER;
         }
         if (line.CheckHitEnemy(enemy)) {
+            Novice::StopAudio(playHandle);
             isGameClear = true; //勝利
+            Novice::PlayAudio(question1, 0, 0.3f);
             scene = CLEAR;
         }
 
@@ -432,6 +442,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 WHITE
             );
             if (preKeys[DIK_E]) {
+                Novice::PlayAudio(decision2, 0, 0.3f);
                 isGameClear = false;
 
                 //元の位置に戻す
@@ -456,6 +467,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 WHITE
             );
             if (preKeys[DIK_E]) {
+                Novice::PlayAudio(decision2, 0, 0.3f);
                 isGameOver = false;
                 //元の位置に戻す
                 player.Initialize();

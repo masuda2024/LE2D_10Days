@@ -88,10 +88,7 @@ void Enemy::Move(int windowLeft, int windowRight, const Vector2& playerPos, cons
 
 void Enemy::Draw() {
 	if (isHit) {
-		/*
-		Novice::DrawBox((int)(pos.x - radius), (int)(pos.y - radius),
-			(int)(radius * 2), (int)(radius * 2), 0.0f,
-			RED, kFillModeSolid);*/
+		
 		Novice::DrawSprite(
 			static_cast<int>(pos.x - radius),
 			static_cast<int>(pos.y - radius),
@@ -99,13 +96,7 @@ void Enemy::Draw() {
 			1.0f, 1.0f, 0.0f, WHITE);
 	
 	} else {
-		/*
-		Novice::DrawBox(
-			static_cast<int>(pos.x - radius), static_cast<int>(pos.y - radius), static_cast<int>(radius * 2), static_cast<int>(radius * 2),
-			0.0f,
-			BLACK,
-			kFillModeSolid
-		);*/
+		
 		Novice::DrawSprite(
 			static_cast<int>(pos.x - radius),
 			static_cast<int>(pos.y - radius),
