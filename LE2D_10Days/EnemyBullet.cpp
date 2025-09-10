@@ -38,16 +38,7 @@ void EnemyBullet::Update() {
 
 void EnemyBullet::Draw()  {
     if (!isShot) return;
-    /*
-    Novice::DrawBox(
-        static_cast<int>(pos.x - radius),
-        static_cast<int>(pos.y - radius),
-        static_cast<int>(radius * 2),
-        static_cast<int>(radius * 2),
-        0.0f,
-        RED
-		, kFillModeSolid
-    );*/
+    
     Novice::DrawSprite(
         static_cast<int>(pos.x - radius),
         static_cast<int>(pos.y - radius),

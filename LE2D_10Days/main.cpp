@@ -7,6 +7,9 @@
 #include "Vector2.h"
 #include <cstring>
 #include <ctime> // time()
+#include"Item.h"
+#include"ItemTracking.h"
+#include"TrackingBullet.h"
 
 const char kWindowTitle[] = "2061_線押し陣取り";
 
@@ -24,8 +27,6 @@ enum Scene {
     CLEAR,
     OVER
 };
-
-
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 {
     Novice::Initialize(kWindowTitle, WR, WB);
@@ -40,21 +41,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 
 
 
-    //＝＝＝ランダム生成＝＝＝
-    /*
-    unsigned int currentTime = static_cast<int>(time(nullptr));
-    srand(currentTime);
-
-    //ダブルアタック
-    float PosXA = static_cast<float>(rand() % WR);
-    float PosYA = static_cast<float>(rand() % -10);
-
-    //追尾弾
-    float PosXB = static_cast<float>(rand() % WR);
-    float PosYB = static_cast<float>(rand() % -10);
-    */
+    
 
     
+
+   
 
 
     
@@ -65,9 +56,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     Enemy enemy;
     Line line;
 
-   
-
-
+   ////////////:::::::::::::::
+    ItemTracking trackingItem;
+    Item doubleAttack;
+    /////////:::::::::::::::::::
 
     const int kMaxPlayerBullets = 8;
     PlayerBullet playerBullets[kMaxPlayerBullets];
@@ -75,8 +67,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     const int kMaxEnemyBullets = 8;
     EnemyBullet enemyBullets[kMaxEnemyBullets];
 
+
+    /////////////::::::::::::::::
+    const int kMaxTrackingBullets = 8;
+    TrackingBullet trackingBullets[kMaxTrackingBullets];
+    ////////////:::::::::::::::::::::
+
+
     int playerBulletCooldown = 0;
     int enemyBulletCooldown = 0;
+
+    /////////::::::::::::::::
+    int trackingBulletCooldown = 0;
+    //////////::::::::::::::::
 
     int isGameOver = false;
     int isGameClear = false;
@@ -158,10 +161,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         Novice::BeginFrame();
         memcpy(preKeys, keys, 256);
         Novice::GetHitKeyStateAll(keys);
+        
+        
+
 
         switch (scene) {
         case TITLE:
 #pragma region タイトル
+            
+            
+            
+            
+            
+
+            
+            
+            
             //	音を鳴らす
             if (Novice::IsPlayingAudio(playHandle) == 0 || playHandle == -1) {
                 playHandle = Novice::PlayAudio(yuttariDIY2, 0, 0.3f);
@@ -208,13 +223,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             if (keys[DIK_SPACE]) {
                 Novice::StopAudio(playHandle);
                 Novice::PlayAudio(decision11, 0, 0.3f);
+                
+                
+                
                 scene = GAME;
                 break;
             }
+
+            
+
+
+
             //クレジット
             if (preKeys[DIK_C]) {
                 Novice::StopAudio(playHandle);
                 Novice::PlayAudio(decision2, 0, 0.3f);
+               
+                
+                
+                
                 scene = CREDIT;
                 break;
             }
@@ -222,6 +249,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             if (preKeys[DIK_T]) {
                 Novice::StopAudio(playHandle);
                 Novice::PlayAudio(decision2, 0, 0.3f);
+                
+                
+                
+                
                 scene = TUTORIAL1;
                 break;
             }
@@ -229,6 +260,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #pragma endregion
         case CREDIT:
 #pragma region クレジット
+
+
+            
+
             //	音を鳴らす
             if (Novice::IsPlayingAudio(playHandle) == 0 || playHandle == -1) {
                 playHandle = Novice::PlayAudio(yuttariDIY2, 0, 0.3f);
@@ -243,6 +278,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             if (preKeys[DIK_E]) {
                 Novice::StopAudio(playHandle);
                 Novice::PlayAudio(decision5, 0, 0.3f);
+                
+               
+                
+                
                 scene = TITLE;
                 break;
             }
@@ -343,9 +382,19 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         enemy.Move(WL, WR, player.GetPos(), playerBullets, kMaxPlayerBullets);
 
         // プレイヤー弾発射
-        if (playerBulletCooldown > 0) playerBulletCooldown--;
+        if (playerBulletCooldown > 0) {
+            playerBulletCooldown--;
+        }
+
+        ////////::::::::::::::
+        if (trackingBulletCooldown > 0) {
+            trackingBulletCooldown--;
+        }
+        ///////////::::::::::::::::::
+        
         if (keys[DIK_SPACE] && playerBulletCooldown <= 0){
             Novice::PlayAudio(firing1, 0, 0.3f);
+            /*
             for (int i = 0; i < kMaxPlayerBullets; i++){
                 if (!playerBullets[i].IsShot()){
                     playerBullets[i].Shoot(player.GetPos());
@@ -353,10 +402,77 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                     break;
                 }
             }
+            */
+
+
+            //////////////:::::::::::::::::::::::::
+            // ダブルアタックを取得していないとき
+            if (!doubleAttack.IsActiveGet()) {
+                for (int i = 0; i < kMaxPlayerBullets; i++) {
+                    if (!playerBullets[i].IsShot()) {
+                        playerBullets[i].Shoot(player.GetPos());
+                        playerBulletCooldown = 20; // クールダウン
+                        break;
+                    }
+                }
+            }
+
+
+            else {
+                int firstIndex = -1;
+                int secondIndex = -1;
+
+                // 空いている弾を2つ探す
+                for (int i = 0; i < kMaxPlayerBullets; i++) {
+                    if (!playerBullets[i].IsShot()) {
+                        if (firstIndex == -1) {
+                            firstIndex = i;
+                        } else if (secondIndex == -1) {
+                            secondIndex = i;
+                            break;
+                        }
+                    }
+                }
+
+                if (firstIndex != -1 && secondIndex != -1) {
+                    Vector2 playerPos = player.GetPos();
+
+                    // 左の弾
+                    Vector2 leftPos = { playerPos.x - 20.0f, playerPos.y };
+                    playerBullets[firstIndex].Shoot(leftPos);
+
+                    // 右の弾
+                    Vector2 rightPos = { playerPos.x + 20.0f, playerPos.y };
+                    playerBullets[secondIndex].Shoot(rightPos);
+
+                    playerBulletCooldown = 10; // クールダウン
+                }
+            }
+
+            if (trackingItem.IsActiveGet()) {
+                for (int i = 0; i < kMaxTrackingBullets; i++) {
+                    if (!trackingBullets[i].IsShot()) {
+                        trackingBullets[i].Shoot(player.GetPos());
+                        trackingBulletCooldown = 20; // クールダウン
+                        break;
+                    }
+                }
+            }
+
+            /////////////////:::::::::::::::::::::::::
+
+
+
         }
 
         // プレイヤー弾更新
         for (int i = 0; i < kMaxPlayerBullets; i++) playerBullets[i].Update();
+        for (int i = 0; i < kMaxTrackingBullets; i++) trackingBullets[i].Update(enemy);
+
+
+
+
+
 
         // 敵弾発射
         if (enemyBulletCooldown > 0) {
@@ -401,6 +517,51 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
             }
         }
 
+
+
+
+
+
+        //////////////::::::::::::::::::::::
+        for (int i = 0; i < kMaxTrackingBullets; i++) {
+            if (trackingBullets[i].IsShot()) {
+                float dx = trackingBullets[i].GetPos().x - enemy.GetPos().x;
+                float dy = trackingBullets[i].GetPos().y - enemy.GetPos().y;
+                float distSq = dx * dx + dy * dy;
+                float hitRange = trackingBullets[i].GetRadius() + enemy.GetRadius();
+
+                if (distSq < hitRange * hitRange) {
+                    trackingBullets[i].SetShot(false); // 弾は必ず消える
+                    if (!enemy.IsHit()) {              // 無敵中でなければ被弾演出
+                        enemy.Hit();
+                        line.LineEnemyHit();
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+        // アイテム更新
+        doubleAttack.Move();
+        trackingItem.Move();
+
+        for (int i = 0; i < kMaxPlayerBullets; i++) {
+            if (playerBullets[i].IsShot()) {
+                doubleAttack.CheckGet(playerBullets, kMaxPlayerBullets);
+                trackingItem.CheckGet(playerBullets, kMaxPlayerBullets);
+            }
+        }
+        /////////////////::::::::::::::::::::::::
+
+
+
+
+
+
         //被弾タイマー更新 ======
         player.Update();
         enemy.Update();
@@ -427,8 +588,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         enemy.Draw();
         line.Draw();
 
+
+
+
+
+        ///////:::::::::::::::
+        doubleAttack.Draw();
+        trackingItem.Draw();
+        ////////::::::::::::::
+
+
         for (int i = 0; i < kMaxPlayerBullets; i++) playerBullets[i].Draw();
         for (int i = 0; i < kMaxEnemyBullets; i++) enemyBullets[i].Draw();
+
+        ////////////::::::::::::::::
+        for (int i = 0; i < kMaxTrackingBullets; i++) trackingBullets[i].Draw();
+        ///////////::::::::::::::::::
 
         break;
 
@@ -449,9 +624,26 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 player.Initialize();
                 enemy.Initialize();
                 line.Initialize();
+                
+                
+                //////////::::::::::::::
+                doubleAttack.Initialize();
+                trackingItem.Initialize();
+                /////////:::::::::::::::::
+
+                
                 playerBullets[kMaxPlayerBullets].Initialize();
                 enemyBullets[kMaxEnemyBullets].Initialize();
                 
+
+
+
+
+
+
+
+
+
                 scene = TITLE;
                 break;
             }
@@ -473,8 +665,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 player.Initialize();
                 enemy.Initialize();
                 line.Initialize();
+
+                //////////::::::::::::::
+                doubleAttack.Initialize();
+                trackingItem.Initialize();
+                /////////:::::::::::::::::
+
                 playerBullets[kMaxPlayerBullets].Initialize();
                 enemyBullets[kMaxEnemyBullets].Initialize();
+
+
+
+
+
+
 
                 scene = TITLE;
                 break;
@@ -483,11 +687,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 #pragma endregion
         }
 
+
+
+
+
+
+
+
+
         Novice::EndFrame();
 
         if (preKeys[DIK_ESCAPE] == 0 && keys[DIK_ESCAPE] != 0) break;
     }
 
     Novice::Finalize();
+    
     return 0;
 }

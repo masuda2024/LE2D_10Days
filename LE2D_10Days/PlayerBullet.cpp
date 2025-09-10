@@ -23,12 +23,20 @@ PlayerBullet::PlayerBullet() {
 
 
 
+
+
 void PlayerBullet::Shoot(const Vector2& startPos) {
     if (!isShot) {
         isShot = true;
         pos = startPos;
     }
+ 
 }
+
+
+
+
+
 
 void PlayerBullet::Update() {
     if (isShot) {
@@ -36,18 +44,17 @@ void PlayerBullet::Update() {
         pos.y += velocity.y;
         if (pos.y < 0) isShot = false;
     }
+    
 }
 
 void PlayerBullet::Draw()  {
     if (isShot) {
-        /*
-        Novice::DrawBox((int)(pos.x - radius), (int)(pos.y - radius),
-            (int)(radius * 2), (int)(radius * 2),0.0f,
-            BLUE, kFillModeSolid);*/
+       
         Novice::DrawSprite(
             static_cast<int>(pos.x - radius),
             static_cast<int>(pos.y - radius),
             playerBullet_Texture_,
             1.0f, 1.0f, 0.0f, WHITE);
     }
+    
 }

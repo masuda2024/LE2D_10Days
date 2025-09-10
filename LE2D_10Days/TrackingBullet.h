@@ -1,29 +1,28 @@
-#pragma once
+﻿#pragma once
 #include "Vector2.h"
+#include <Novice.h>
+#include "Enemy.h"
 
-class PlayerBullet {
+class TrackingBullet {
 public:
-    PlayerBullet();
-    
-     
+    TrackingBullet();
+
     void Initialize();
-    void Update();
-    void Draw() ;
     void Shoot(const Vector2& startPos);
-    
-   
+    void Update(Enemy& enemy);
+    void Draw();
 
     bool IsShot() const { return isShot; }
+    void SetShot(bool value) { isShot = value; }
+
     Vector2 GetPos() const { return pos; }
     float GetRadius() const { return radius; }
-	void SetShot(bool shot) { isShot = shot; }
 
 private:
-    bool isShot;
-   
-     
     Vector2 pos;
-    Vector2 velocity;
+    float speed;
     float radius;
-    int playerBullet_Texture_;
+    bool isShot;
+
+    int graphHandleBullet;
 };
