@@ -44,7 +44,10 @@ void ItemTracking::Move() {
 
 void ItemTracking::Draw() {
     if (isAppear) {
-        Novice::DrawSprite((int)(pos.x - radius), (int)(pos.y - radius), graphHandleItem, 1.0f, 1.0f, 0.0f, WHITE);
+        Novice::DrawSprite(
+            (int)(pos.x - radius),
+            (int)(pos.y - radius),
+            graphHandleItem, 1.0f, 1.0f, 0.0f, WHITE);
     }
 }
 

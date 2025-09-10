@@ -36,6 +36,9 @@ void TrackingBullet::Update(Enemy& enemy) {
 
 void TrackingBullet::Draw() {
     if (isShot) {
-        Novice::DrawSprite((int)(pos.x - radius), (int)(pos.y - radius), graphHandleBullet, 1.0f, 1.0f, 0.0f, WHITE);
+        Novice::DrawSprite(
+            (int)(pos.x - radius),
+            (int)(pos.y - radius),
+            graphHandleBullet, 1.0f, 1.0f, 0.0f, WHITE);
     }
 }

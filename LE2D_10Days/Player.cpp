@@ -124,7 +124,6 @@ void Player::Draw() {
 
 
 
-	// デバッグ用表示
-	Novice::ScreenPrintf(0, 0, "Player isHit: %d", isHit);
+	
 }
 

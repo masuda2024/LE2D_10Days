@@ -92,6 +92,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
     int Title2 = Novice::LoadTexture("Resource/Title/TitleFont2.png");
     int Title3 = Novice::LoadTexture("Resource/Title/WarningColor.png");
     int TitleUI = Novice::LoadTexture("Resource/Title/TitleUI.png");
+    int playerTank = Novice::LoadTexture("Resource/Title/PlayerTANK.png");
+
     //クレジット
     int Credit = Novice::LoadTexture("Resource/Credit/Credit.png");
     //チュートリアル
@@ -216,7 +218,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 2.0f, 2.0f, 0.0f,
                 WHITE
             );
-
+            Novice::DrawSprite(
+                30, 280, playerTank,
+                2.0f, 2.0f, 0.0f,
+                WHITE
+            );
 
 
             //ゲーム
@@ -394,15 +400,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         
         if (keys[DIK_SPACE] && playerBulletCooldown <= 0){
             Novice::PlayAudio(firing1, 0, 0.3f);
-            /*
-            for (int i = 0; i < kMaxPlayerBullets; i++){
-                if (!playerBullets[i].IsShot()){
-                    playerBullets[i].Shoot(player.GetPos());
-                    playerBulletCooldown = 10;
-                    break;
-                }
-            }
-            */
+            
 
 
             //////////////:::::::::::::::::::::::::
@@ -411,7 +409,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 for (int i = 0; i < kMaxPlayerBullets; i++) {
                     if (!playerBullets[i].IsShot()) {
                         playerBullets[i].Shoot(player.GetPos());
-                        playerBulletCooldown = 20; // クールダウン
+                        playerBulletCooldown = 40; // クールダウン
                         break;
                     }
                 }
@@ -453,7 +451,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 for (int i = 0; i < kMaxTrackingBullets; i++) {
                     if (!trackingBullets[i].IsShot()) {
                         trackingBullets[i].Shoot(player.GetPos());
-                        trackingBulletCooldown = 20; // クールダウン
+                        trackingBulletCooldown = 40; // クールダウン
                         break;
                     }
                 }
@@ -484,7 +482,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
                 if (!enemyBullets[i].IsShot()){
                     Novice::PlayAudio(firing1, 0, 0.3f);
                     enemyBullets[i].Shoot(enemy.GetPos());
-                    enemyBulletCooldown = 30; // 敵のクールタイム
+                    enemyBulletCooldown = 15; // 敵のクールタイム
                     break;
                 }
             }
